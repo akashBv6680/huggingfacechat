@@ -1,6 +1,7 @@
 streamlit
 langchain
 transformers
+accelerate
+bitsandbytes
 langchain_huggingface
 torch
-sentencepiece
