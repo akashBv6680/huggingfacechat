@@ -18,24 +18,24 @@ except KeyError:
 # --- Cache the model loading to prevent reloading on every interaction ---
 @st.cache_resource
 def load_llm_and_chain():
-    # Use a smaller, more memory-efficient model
-    model_name = "distilgpt2" 
+    # Use a small, conversation-optimized model
+    # This is a T5 model, great for Q&A and dialogue, and still very small
+    model_name = "google/flan-t5-small"
     
-    with st.spinner(f"Loading model: {model_name}..."):
+    with st.spinner(f"Loading conversational model: {model_name}..."):
+        # We need a different pipeline task for T5 models
         text_gen_pipeline = pipeline(
-            "text-generation",
+            "text2text-generation",
             model=model_name,
             max_new_tokens=128,
-            repetition_penalty=1.1,
-            do_sample=True,
             temperature=0.7
         )
     llm = HuggingFacePipeline(pipeline=text_gen_pipeline)
 
-    prompt_template = """You are a helpful AI assistant. Answer the questions naturally.
-    User: {question}
-    Assistant:"""
-
+    # The prompt should be simple for T5 models
+    prompt_template = """Question: {question}
+    Answer:"""
+    
     prompt = PromptTemplate(
         template=prompt_template,
         input_variables=["question"]
@@ -64,10 +64,8 @@ if prompt := st.chat_input("What is up?"):
 
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
-            # Use the LLM chain to get a response
             response = llm_chain.invoke(prompt)
-            # The output for distilgpt2 might be different, so let's clean it up
-            clean_response = response['text'].split(prompt)[-1].strip()
-            st.markdown(clean_response)
+            # The T5 pipeline output is cleaner, so no complex post-processing is needed
+            st.markdown(response['text'])
 
-    st.session_state.messages.append({"role": "assistant", "content": clean_response})
+    st.session_state.messages.append({"role": "assistant", "content": response['text']})
