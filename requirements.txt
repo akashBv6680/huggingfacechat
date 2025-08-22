@@ -3,3 +3,4 @@ langchain
 transformers
 langchain_huggingface
 torch
+sentencepiece
