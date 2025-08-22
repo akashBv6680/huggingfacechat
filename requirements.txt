@@ -1,0 +1,7 @@
+langchain
+transformers
+accelerate
+bitsandbytes
+sentence-transformers
+langchain_huggingface
+torch
